@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast Tech Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans pb-24 selection:bg-indigo-500 selection:text-white">
+
+    <div class="max-w-md mx-auto bg-slate-900 min-h-screen shadow-2xl relative flex flex-col border-x border-slate-800">
+        
+        <header class="bg-slate-900/80 backdrop-blur border-b border-slate-800 p-4 sticky top-0 z-50 flex justify-between items-center">
+            <div>
+                <h1 class="text-lg font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">GESTOR FAST TECH</h1>
+                <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Pro Controller</p>
+            </div>
+            <div class="flex items-center gap-1.5 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">
+                <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></span>
+                <span class="text-xs font-mono text-slate-300" id="clock">00:00</span>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 overflow-y-auto">
+
+            <section id="view-home" class="space-y-4">
+                <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-5 shadow-lg shadow-indigo-950/50">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-indigo-100 opacity-80">Lucro Líquido</span>
+                    <h2 class="text-3xl font-black mt-1 tracking-tight" id="dash-lucro">R$ 0,00</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mt-5 pt-4 border-t border-white/10 text-sm">
+                        <div>
+                            <span class="text-xs text-indigo-200 block mb-0.5">💰 Total Entradas</span>
+                            <p class="font-bold text-emerald-300 font-mono text-base" id="dash-entrada">+ R$ 0,00</p>
+                        </div>
+                        <div>
+                            <span class="text-xs text-indigo-200 block mb-0.5">💸 Total Saídas</span>
+                            <p class="font-bold text-rose-300 font-mono text-base" id="dash-saida">- R$ 0,00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <div onclick="navigate('clientes')" class="bg-slate-800 border border-slate-700/60 p-3 rounded-xl text-center cursor-pointer hover:border-indigo-500/50 transition">
+                        <span class="text-[11px] text-slate-400 block font-medium">👥 Clientes</span>
+                        <p class="text-xl font-bold text-indigo-400 mt-1" id="count-clientes">0</p>
+                    </div>
+                    <div onclick="navigate('revendas')" class="bg-slate-800 border border-slate-700/60 p-3 rounded-xl text-center cursor-pointer hover:border-cyan-500/50 transition">
+                        <span class="text-[11px] text-slate-400 block font-medium">🤝 Revendas</span>
+                        <p class="text-xl font-bold text-cyan-400 mt-1" id="count-revendas">0</p>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700/60 p-3 rounded-xl text-center">
+                        <span class="text-[11px] text-slate-400 block font-medium">🔴 Vencidos</span>
+                        <p class="text-xl font-bold text-rose-400 mt-1" id="count-vencidos">0</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-3">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1">Ações Rápidas</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="clearClienteForm(); navigate('cadastro-cliente')" class="flex items-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-left border border-slate-700/40 transition">
+                            <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-400"><i data-lucide="user-plus" class="w-4 h-4"></i></div>
+                            <span class="text-xs font-semibold">Novo Cliente</span>
+                        </button>
+                        <button onclick="clearRevendaForm(); navigate('cadastro-revenda')" class="flex items-center gap-2 p-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-left border border-slate-700/40 transition">
+                            <div class="p-2 bg-cyan-500/10 rounded-lg text-cyan-400"><i data-lucide="handshake" class="w-4 h-4"></i></div>
+                            <span class="text-xs font-semibold">Nova Revenda</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-clientes" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-base font-bold flex items-center gap-2 text-indigo-400"><i data-lucide="users" class="w-5 h-5"></i> Clientes</h2>
+                    <button onclick="clearClienteForm(); navigate('cadastro-cliente')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-2 rounded-lg font-bold flex items-center gap-1 transition">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Adicionar
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-500"></i>
+                    <input type="text" id="search-bar" oninput="renderClientes()" placeholder="Buscar cliente..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div id="wrapper-clientes" class="space-y-2.5"></div>
+            </section>
+
+            <section id="view-cadastro-cliente" class="hidden space-y-4">
+                <h2 class="text-base font-bold text-indigo-400 flex items-center gap-2"><i data-lucide="user-plus"></i> Configurar Cliente</h2>
+                
+                <form id="form-cliente" onsubmit="handleSaveCliente(event)" class="bg-slate-800/60 border border-slate-800 p-4 rounded-xl space-y-3 text-xs">
+                    <input type="hidden" id="field-id">
+                    
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Nome:</label>
+                        <input type="text" id="field-nome" required class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Telefone:</label>
+                        <input type="text" id="field-telefone" placeholder="Ex: 5564999999999" required class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">Plataforma:</label>
+                            <input type="text" id="field-plataforma" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">Aplicativo:</label>
+                            <input type="text" id="field-aplicativo" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">MAC:</label>
+                            <input type="text" id="field-mac" placeholder="00:00:00:00" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">KEY:</label>
+                            <input type="text" id="field-key" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">Data Ativação:</label>
+                            <input type="date" id="field-datativa" required class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">Data Renovação:</label>
+                            <input type="date" id="field-datrenov" required class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">Plano:</label>
+                            <select id="field-plano" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                                <option value="Mensal">Mensal</option>
+                                <option value="Trimestral">Trimestral</option>
+                                <option value="Semestral">Semestral</option>
+                                <option value="Anual">Anual</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">Valor:</label>
+                            <input type="number" step="0.01" id="field-valor" required class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded text-xs uppercase transition">Salvar</button>
+                        <button type="button" onclick="triggerDirectNotification()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 rounded text-xs uppercase transition flex items-center justify-center" title="Gerar Cobrança"><i data-lucide="bot" class="w-4 h-4"></i></button>
+                        <button type="button" onclick="navigate('clientes')" class="bg-slate-700 hover:bg-slate-600 font-bold px-4 rounded text-xs transition">Cancelar</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="view-revendas" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-base font-bold flex items-center gap-2 text-cyan-400"><i data-lucide="handshake" class="w-5 h-5"></i> Revendas</h2>
+                    <button onclick="clearRevendaForm(); navigate('cadastro-revenda')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3 py-2 rounded-lg font-bold flex items-center gap-1 transition">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Nova Revenda
+                    </button>
+                </div>
+                <div id="wrapper-revendas" class="space-y-2"></div>
+            </section>
+
+            <section id="view-cadastro-revenda" class="hidden space-y-4">
+                <h2 class="text-base font-bold text-cyan-400 flex items-center gap-2"><i data-lucide="handshake"></i> Configurar Revenda</h2>
+                <form id="form-revenda" onsubmit="handleSaveRevenda(event)" class="bg-slate-800/60 border border-slate-800 p-4 rounded-xl space-y-3 text-xs">
+                    <input type="hidden" id="rev-id">
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Nome do Revendedor:</label>
+                        <input type="text" id="rev-nome" required class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-cyan-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">Vence:</label>
+                            <input type="date" id="rev-venc" required class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 font-medium mb-1">Valor Recebido (R$):</label>
+                            <input type="number" step="0.01" id="rev-valor" required placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-cyan-500">
+                        </div>
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button type="submit" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded text-xs uppercase transition">Salvar Revenda</button>
+                        <button type="button" onclick="navigate('revendas')" class="bg-slate-700 hover:bg-slate-600 font-bold px-4 rounded text-xs transition">Voltar</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="view-financeiro" class="hidden space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-base font-bold flex items-center gap-2 text-emerald-400"><i data-lucide="wallet" class="w-5 h-5"></i> Financeiro</h2>
+                    <div class="flex gap-1.5">
+                        <button onclick="navigate('cadastro-entrada')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-2.5 py-1.5 rounded-md font-bold flex items-center gap-1 transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> + Entrada
+                        </button>
+                        <button onclick="navigate('cadastro-despesa')" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-2.5 py-1.5 rounded-md font-bold flex items-center gap-1 transition">
+                            <i data-lucide="minus" class="w-3.5 h-3.5"></i> - Saída
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Lista de Transações</h3>
+                    <div id="wrapper-transacoes" class="bg-slate-900 border border-slate-800 rounded-xl divide-y divide-slate-800 overflow-hidden text-xs"></div>
+                </div>
+            </section>
+
+            <section id="view-cadastro-entrada" class="hidden space-y-4">
+                <h2 class="text-base font-bold text-emerald-400 flex items-center gap-2"><i data-lucide="plus-circle"></i> Adicionar Entrada Manual</h2>
+                <form id="form-entrada" onsubmit="handleSaveEntradaManual(event)" class="bg-slate-800/60 border border-slate-800 p-4 rounded-xl space-y-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Descrição / Origem:</label>
+                        <input type="text" id="ent-nome" required placeholder="Nome do recebimento" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Valor Recebido (R$):</label>
+                        <input type="number" step="0.01" id="ent-valor" required class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded text-xs uppercase transition">Lançar Entrada</button>
+                        <button type="button" onclick="navigate('financeiro')" class="bg-slate-700 hover:bg-slate-600 font-bold px-4 rounded text-xs transition">Cancelar</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="view-cadastro-despesa" class="hidden space-y-4">
+                <h2 class="text-base font-bold text-rose-400 flex items-center gap-2"><i data-lucide="minus-circle"></i> Adicionar Saída / Despesa</h2>
+                <form id="form-despesa" onsubmit="handleSaveDespesa(event)" class="bg-slate-800/60 border border-slate-800 p-4 rounded-xl space-y-3 text-xs">
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Descrição / Gasto:</label>
+                        <input type="text" id="des-nome" required placeholder="Ex: Servidor - R$ 200" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-rose-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 font-medium mb-1">Valor da Despesa (R$):</label>
+                        <input type="number" step="0.01" id="des-valor" required class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-slate-100 outline-none focus:border-rose-500">
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button type="submit" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 rounded text-xs uppercase transition">Lançar Nova Despesa</button>
+                        <button type="button" onclick="navigate('financeiro')" class="bg-slate-700 hover:bg-slate-600 font-bold px-4 rounded text-xs transition">Cancelar</button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="view-cobranca" class="hidden space-y-4">
+                <h2 class="text-base font-bold text-amber-400 flex items-center gap-2"><i data-lucide="bot"></i> Gerar Cobrança</h2>
+                <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4 space-y-3">
+                    <div id="cobranca-preview" class="bg-slate-950 p-3.5 rounded border border-slate-800 font-mono text-xs text-slate-300 whitespace-pre-wrap leading-relaxed shadow-inner"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="copyNotificationText()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 py-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-700">
+                        <i data-lucide="copy" class="w-4 h-4 text-indigo-400"></i> Copiar
+                    </button>
+                    <button onclick="dispatchWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg">
+                        <i data-lucide="send" class="w-4 h-4"></i> WhatsApp
+                    </button>
+                </div>
+                <button onclick="navigate('clientes')" class="w-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 text-xs py-2 rounded-lg font-medium transition">Voltar para Clientes</button>
+            </section>
+
+        </main>
+
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-slate-900/90 backdrop-blur border-t border-slate-800 grid grid-cols-4 py-2 z-50 shadow-xl">
+            <button onclick="navigate('home')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition" id="nav-home">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Início</span>
+            </button>
+            <button onclick="navigate('clientes')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition" id="nav-clientes">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Clientes</span>
+            </button>
+            <button onclick="navigate('revendas')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-cyan-400 transition" id="nav-revendas">
+                <i data-lucide="handshake" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Revendas</span>
+            </button>
+            <button onclick="navigate('financeiro')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-emerald-400 transition" id="nav-financeiro">
+                <i data-lucide="wallet" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Painel</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <script>
+        // Database State
+        let db = JSON.parse(localStorage.getItem('fasttech_db')) || {
+            clientes: [],
+            revendas: [],
+            transacoes: []
+        };
+
+        let currentCobranca = { telefone: '', mensagem: '' };
+
+        // Save State helper
+        function saveToStorage() {
+            localStorage.setItem('fasttech_db', JSON.stringify(db));
+            updateDashboard();
+        }
+
+        // Navigation Engine
+        function navigate(viewId) {
+            const views = ['home', 'clientes', 'cadastro-cliente', 'revendas', 'cadastro-revenda', 'financeiro', 'cadastro-entrada', 'cadastro-despesa', 'cobranca'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if(el) el.classList.add('hidden');
+            });
+            
+            const targetView = document.getElementById(`view-${viewId}`);
+            if(targetView) targetView.classList.remove('hidden');
+
+            ['home', 'clientes', 'revendas', 'financeiro'].forEach(n => {
+                const navBtn = document.getElementById(`nav-${n}`);
+                if(navBtn) navBtn.className = "flex flex-col items-center gap-1 text-slate-400 hover:text-indigo-400 transition";
+            });
+            
+            const activeNav = document.getElementById(`nav-${viewId}`);
+            if(activeNav) {
+                if(viewId === 'revendas') activeNav.className = "flex flex-col items-center gap-1 text-cyan-400 transition";
+                else if(viewId === 'financeiro') activeNav.className = "flex flex-col items-center gap-1 text-emerald-400 transition";
+                else activeNav.className = "flex flex-col items-center gap-1 text-indigo-400 transition";
+            }
+
+            if(viewId === 'clientes') renderClientes();
+            if(viewId === 'revendas') renderRevendas();
+            if(viewId === 'financeiro') renderTransacoes();
+            if(viewId === 'home') updateDashboard();
+        }
+
+        // Clock display
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Dashboard calculation engine
+        function updateDashboard() {
+            let totalEntradas = 0;
+            let totalSaidas = 0;
+
+            db.transacoes.forEach(t => {
+                if(t.tipo === 'entrada') totalEntradas += parseFloat(t.valor);
+                if(t.tipo === 'saida') totalSaidas += parseFloat(t.valor);
+            });
+
+            const lucroLiquido = totalEntradas - totalSaidas;
+            const hoje = new Date().toISOString().split('T')[0];
+            
+            let vencidosCount = 0;
+            db.clientes.forEach(c => { if(c.datrenov < hoje) vencidosCount++; });
+            db.revendas.forEach(r => { if(r.venc < hoje) vencidosCount++; });
+
+            document.getElementById('dash-lucro').innerText = `R$ ${lucroLiquido.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('dash-entrada').innerText = `+ R$ ${totalEntradas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('dash-saida').innerText = `- R$ ${totalSaidas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            
+            document.getElementById('count-clientes').innerText = db.clientes.length;
+            document.getElementById('count-revendas').innerText = db.revendas.length;
+            document.getElementById('count-vencidos').innerText = vencidosCount;
+        }
+
+        /* CLIENTS MANAGEMENT LÓGICA */
+        function clearClienteForm() {
+            document.getElementById('form-cliente').reset();
+            document.getElementById('field-id').value = '';
+        }
+
+        function handleSaveCliente(e) {
+            e.preventDefault();
+            const id = document.getElementById('field-id').value;
+            
+            const clienteData = {
+                id: id || Date.now().toString(),
+                nome: document.getElementById('field-nome').value,
+                telefone: document.getElementById('field-telefone').value,
+                plataforma: document.getElementById('field-plataforma').value,
+                aplicativo: document.getElementById('field-aplicativo').value,
+                mac: document.getElementById('field-mac').value,
+                key: document.getElementById('field-key').value,
+                datativa: document.getElementById('field-datativa').value,
+                datrenov: document.getElementById('field-datrenov').value,
+                plano: document.getElementById('field-plano').value,
+                valor: parseFloat(document.getElementById('field-valor').value) || 0
+            };
+
+            if(id) {
+                const idx = db.clientes.findIndex(c => c.id === id);
+                if(idx !== -1) db.clientes[idx] = clienteData;
+            } else {
+                db.clientes.push(clienteData);
+                db.transacoes.unshift({
+                    id: Date.now().toString(),
+                    nome: `Mensalidade: ${clienteData.nome}`,
+                    valor: clienteData.valor,
+                    tipo: 'entrada',
+                    data: new Date().toLocaleDateString('pt-BR')
+                });
+            }
+            saveToStorage();
+            navigate('clientes');
+        }
+
+        function editCliente(id) {
+            const c = db.clientes.find(item => item.id === id);
+            if(!c) return;
+            document.getElementById('field-id').value = c.id;
+            document.getElementById('field-nome').value = c.nome;
+            document.getElementById('field-telefone').value = c.telefone;
+            document.getElementById('field-plataforma').value = c.plataforma;
+            document.getElementById('field-aplicativo').value = c.aplicativo;
+            document.getElementById('field-mac').value = c.mac;
+            document.getElementById('field-key').value = c.key;
+            document.getElementById('field-datativa').value = c.datativa;
+            document.getElementById('field-datrenov').value = c.datrenov;
+            document.getElementById('field-plano').value = c.plano;
+            document.getElementById('field-valor').value = c.valor;
+            navigate('cadastro-cliente');
+        }
+
+        function deleteCliente(id) {
+            if(confirm('Deseja excluir permanentemente este cliente?')) {
+                db.clientes = db.clientes.filter(c => c.id !== id);
+                saveToStorage();
+                renderClientes();
+            }
+        }
+
+        function renderClientes() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const wrapper = document.getElementById('wrapper-clientes');
+            wrapper.innerHTML = '';
+            const hoje = new Date().toISOString().split('T')[0];
+
+            const filtered = db.clientes.filter(c => c.nome.toLowerCase().includes(query) || c.telefone.includes(query));
+
+            if(filtered.length === 0) {
+                wrapper.innerHTML = `<p class="text-center text-xs text-slate-500 py-6">Nenhum cliente cadastrado ou encontrado.</p>`;
+                return;
+            }
+
+            filtered.forEach(c => {
+                const isVencido = c.datrenov < hoje;
+                const dataFormatada = c.datrenov.split('-').reverse().join('/');
+
+                wrapper.innerHTML += `
+                    <div class="bg-slate-900 border ${isVencido ? 'border-rose-500/40 bg-rose-950/5' : 'border-slate-800'} rounded-xl p-3 flex flex-col gap-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-200 flex items-center gap-1.5">
+                                    ${c.nome}
+                                    <span class="text-[9px] px-1.5 py-0.5 rounded font-normal ${isVencido ? 'bg-rose-500/20 text-rose-300' : 'bg-indigo-500/10 text-indigo-300'}">${c.plano}</span>
+                                </h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5 font-mono">${c.telefone}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-black text-indigo-400 font-mono">R$ ${c.valor.toFixed(2)}</span>
+                                <p class="text-[10px] ${isVencido ? 'text-rose-400 font-semibold' : 'text-slate-400'} mt-0.5">Vence: ${dataFormatada}</p>
+                            </div>
+                        </div>
+                        
+                        ${c.mac || c.aplicativo ? `
+                        <div class="bg-slate-950/60 rounded p-2 text-[11px] font-mono border border-slate-800/40 text-slate-400 space-y-0.5">
+                            ${c.aplicativo ? `<div><span class="text-slate-600">APP:</span> ${c.aplicativo} ${c.plataforma ? `(${c.plataforma})` : ''}</div>` : ''}
+                            ${c.mac ? `<div><span class="text-slate-600">MAC:</span> ${c.mac} ${c.key ? `| <span class="text-slate-600">KEY:</span> ${c.key}` : ''}</div>` : ''}
+                        </div>` : ''}
+
+                        <div class="flex justify-end gap-1.5 pt-1 border-t border-slate-800/60">
+                            <button onclick="setupCobranca('${c.id}')" class="p-1.5 bg-amber-500/10 text-amber-400 rounded hover:bg-amber-500/20 transition" title="Cobrança"><i data-lucide="bot" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="editCliente('${c.id}')" class="p-1.5 bg-slate-800 text-indigo-400 rounded hover:bg-slate-700 border border-slate-700/50 transition"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="deleteCliente('${c.id}')" class="p-1.5 bg-slate-800 text-rose-400 rounded hover:bg-slate-700 border border-slate-700/50 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        /* REVENDA MANAGEMENT LÓGICA */
+        function clearRevendaForm() {
+            document.getElementById('form-revenda').reset();
+            document.getElementById('rev-id').value = '';
+        }
+
+        function handleSaveRevenda(e) {
+            e.preventDefault();
+            const id = document.getElementById('rev-id').value;
+
+            const revendaData = {
+                id: id || Date.now().toString(),
+                nome: document.getElementById('rev-nome').value,
+                venc: document.getElementById('rev-venc').value,
+                valor: parseFloat(document.getElementById('rev-valor').value) || 0
+            };
+
+            if(id) {
+                const idx = db.revendas.findIndex(r => r.id === id);
+                if(idx !== -1) db.revendas[idx] = revendaData;
+            } else {
+                db.revendas.push(revendaData);
+                // CORREÇÃO AQUI: Mudado de 'saida' para 'entrada' para contabilizar no faturamento do painel
+                db.transacoes.unshift({
+                    id: Date.now().toString(),
+                    nome: `Carga Revenda: ${revendaData.nome}`,
+                    valor: revendaData.valor,
+                    tipo: 'entrada',
+                    data: new Date().toLocaleDateString('pt-BR')
+                });
+            }
+            saveToStorage();
+            navigate('revendas');
+        }
+
+        function editRevenda(id) {
+            const r = db.revendas.find(item => item.id === id);
+            if(!r) return;
+            document.getElementById('rev-id').value = r.id;
+            document.getElementById('rev-nome').value = r.nome;
+            document.getElementById('rev-venc').value = r.venc;
+            document.getElementById('rev-valor').value = r.valor || 0;
+            navigate('cadastro-revenda');
+        }
+
+        function deleteRevenda(id) {
+            if(confirm('Deseja excluir permanentemente esta revenda?')) {
+                db.revendas = db.revendas.filter(r => r.id !== id);
+                saveToStorage();
+                renderRevendas();
+            }
+        }
+
+        function renderRevendas() {
+            const wrapper = document.getElementById('wrapper-revendas');
+            wrapper.innerHTML = '';
+            const hoje = new Date().toISOString().split('T')[0];
+
+            if(db.revendas.length === 0) {
+                wrapper.innerHTML = `<p class="text-center text-xs text-slate-500 py-6">Nenhuma revenda cadastrada.</p>`;
+                return;
+            }
+
+            db.revendas.forEach(r => {
+                const isVencido = r.venc < hoje;
+                const dataFormatada = r.venc.split('-').reverse().join('/');
+                const vlr = r.valor ? parseFloat(r.valor) : 0;
+
+                wrapper.innerHTML += `
+                    <div class="bg-slate-900 border ${isVencido ? 'border-rose-500/40 bg-rose-950/5' : 'border-slate-800'} p-3 rounded-xl flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold text-slate-200 text-sm flex items-center gap-1.5">${r.nome}</p>
+                            <p class="text-[11px] ${isVencido ? 'text-rose-400 font-semibold' : 'text-slate-400'} mt-0.5">Vence em: ${dataFormatada}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-right">
+                                <p class="text-xs font-bold text-cyan-400 font-mono">R$ ${vlr.toFixed(2)}</p>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="editRevenda('${r.id}')" class="p-1.5 bg-slate-800 text-cyan-400 hover:bg-slate-700 rounded border border-slate-700/50 transition"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
+                                <button onclick="deleteRevenda('${r.id}')" class="p-1.5 bg-slate-800 text-rose-400 hover:bg-slate-700 rounded border border-slate-700/50 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        /* FINANCE PANEL LOGIC */
+        function handleSaveEntradaManual(e) {
+            e.preventDefault();
+            db.transacoes.unshift({
+                id: Date.now().toString(),
+                nome: document.getElementById('ent-nome').value,
+                valor: parseFloat(document.getElementById('ent-valor').value) || 0,
+                tipo: 'entrada',
+                data: new Date().toLocaleDateString('pt-BR')
+            });
+            document.getElementById('form-entrada').reset();
+            saveToStorage();
+            navigate('financeiro');
+        }
+
+        function handleSaveDespesa(e) {
+            e.preventDefault();
+            db.transacoes.unshift({
+                id: Date.now().toString(),
+                nome: document.getElementById('des-nome').value,
+                valor: parseFloat(document.getElementById('des-valor').value) || 0,
+                tipo: 'saida',
+                data: new Date().toLocaleDateString('pt-BR')
+            });
+            document.getElementById('form-despesa').reset();
+            saveToStorage();
+            navigate('financeiro');
+        }
+
+        function deleteTransacao(id) {
+            if(confirm('Excluir este lançamento do histórico?')) {
+                db.transacoes = db.transacoes.filter(t => t.id !== id);
+                saveToStorage();
+                renderTransacoes();
+            }
+        }
+
+        function renderTransacoes() {
+            const wrapper = document.getElementById('wrapper-transacoes');
+            wrapper.innerHTML = '';
+
+            if(db.transacoes.length === 0) {
+                wrapper.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Nenhum fluxo de caixa registrado.</p>`;
+                return;
+            }
+
+            db.transacoes.forEach(t => {
+                const isEntrada = t.tipo === 'entrada';
+                wrapper.innerHTML += `
+                    <div class="p-3 hover:bg-slate-800/40 flex justify-between items-center transition">
+                        <div>
+                            <p class="font-medium text-slate-200">${t.nome}</p>
+                            <p class="text-[10px] text-slate-500 mt-0.5">${t.data}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono font-bold ${isEntrada ? 'text-emerald-400' : 'text-rose-400'}">
+                                ${isEntrada ? '+' : '-'} R$ ${t.valor.toFixed(2)}
+                            </span>
+                            <button onclick="deleteTransacao('${t.id}')" class="text-slate-600 hover:text-rose-400 transition"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        /* AUTO BOT COBRANÇA ENGINE */
+        function triggerDirectNotification() {
+            const nome = document.getElementById('field-nome').value;
+            const tlf = document.getElementById('field-telefone').value;
+            const renov = document.getElementById('field-datrenov').value;
+            const valor = document.getElementById('field-valor').value;
+            const app = document.getElementById('field-aplicativo').value || 'Aplicativo Contratado';
+
+            if(!nome || !tlf || !renov || !valor) {
+                alert('Preencha os campos essenciais do formulário para estruturar a mensagem.');
+                return;
+            }
+
+            buildCobrancaObject({ nome, telefone: tlf, datrenov: renov, valor: parseFloat(valor), aplicativo: app });
+        }
+
+        function setupCobranca(id) {
+            const c = db.clientes.find(item => item.id === id);
+            if(!c) return;
+            buildCobrancaObject(c);
+        }
+
+        function buildCobrancaObject(cliente) {
+            const dataFmt = cliente.datrenov.split('-').reverse().join('/');
+            const msg = `Olá, *${cliente.nome}*!\n\nPassando para lembrar que seu acesso ao aplicativo *${cliente.aplicativo || 'Premium'}* vencerá em *${dataFmt}*.\n\nPara renovar seu plano e manter o sinal ativo sem interrupções:\n💰 *Valor:* R$ ${cliente.valor.toFixed(2)}\n\nCaso já tenha efetuado o pagamento, envie o comprovante! 🚀`;
+            
+            currentCobranca.telefone = cliente.telefone.replace(/\D/g, '');
+            currentCobranca.mensagem = encodeURIComponent(msg);
+
+            document.getElementById('cobranca-preview').innerText = msg;
+            navigate('cobranca');
+        }
+
+        function copyNotificationText() {
+            const txt = document.getElementById('cobranca-preview').innerText;
+            navigator.clipboard.writeText(txt);
+            alert('Mensagem copiada para a área de transferência!');
+        }
+
+        function dispatchWhatsApp() {
+            if(!currentCobranca.telefone) {
+                alert('Telefone inválido ou não cadastrado.');
+                return;
+            }
+            window.open(`https://api.whatsapp.com/send?phone=${currentCobranca.telefone}&text=${currentCobranca.mensagem}`, '_blank');
+        }
+
+        // Inicializar Views & Ícones
+        navigate('home');
+        lucide.createIcons();
+    </script>
+</body>
+</html>
